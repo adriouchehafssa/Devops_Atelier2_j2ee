@@ -2,32 +2,33 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21.0.1'
+          distribution: 'temurin'
 
-    - name: Cache Maven dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    - name: Build with Maven
-      run: mvn clean install
-
-    - name: Run tests with Maven
-      run: mvn test
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+      - name : Build with maven
+        run : mvn clean install
+      - name: Run tests with Maven
+        run: mvn test
